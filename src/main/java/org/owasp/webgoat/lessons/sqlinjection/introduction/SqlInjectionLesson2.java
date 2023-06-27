@@ -59,6 +59,12 @@ public class SqlInjectionLesson2 extends AssignmentEndpoint {
     return injectableQuery(query);
   }
 
+  @PostMapping("/SqlInjection/attack2b")
+  @ResponseBody
+  public AttackResult completed(@RequestParam String simonQuery) {
+    return injectableQuery(simonQuery);
+  }
+    
   protected AttackResult injectableQuery(String query) {
     try (var connection = dataSource.getConnection()) {
       Statement statement = connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
