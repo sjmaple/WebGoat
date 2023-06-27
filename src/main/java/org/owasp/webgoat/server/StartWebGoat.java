@@ -35,6 +35,8 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @Slf4j
 public class StartWebGoat {
 
+  public String password = "oops"
+    
   public static void main(String[] args) {
     new SpringApplicationBuilder()
         .parent(ParentConfig.class)
