@@ -61,11 +61,31 @@ public class SqlInjectionLesson2 extends AssignmentEndpoint {
 
   @PostMapping("/SqlInjection/attack2b")
   @ResponseBody
-  public AttackResult completed(@RequestParam String simonQuery) {
-    return injectableQuery(simonQuery);
+  public AttackResult completed2b(@RequestParam String simonQuery) {
+    return injectableQuery2b(simonQuery);
   }
     
   protected AttackResult injectableQuery(String query) {
+    try (var connection = dataSource.getConnection()) {
+      Statement statement = connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
+      ResultSet results = statement.executeQuery(query);
+      StringBuilder output = new StringBuilder();
+
+      results.first();
+
+      if (results.getString("department").equals("Marketing")) {
+        output.append("<span class='feedback-positive'>" + query + "</span>");
+        output.append(SqlInjectionLesson8.generateTable(results));
+        return success(this).feedback("sql-injection.2.success").output(output.toString()).build();
+      } else {
+        return failed(this).feedback("sql-injection.2.failed").output(output.toString()).build();
+      }
+    } catch (SQLException sqle) {
+      return failed(this).feedback("sql-injection.2.failed").output(sqle.getMessage()).build();
+    }
+  }
+
+protected AttackResult injectableQuery2b(String query) {
     try (var connection = dataSource.getConnection()) {
       Statement statement = connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
       ResultSet results = statement.executeQuery(query);
