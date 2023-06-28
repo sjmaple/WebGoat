@@ -78,4 +78,31 @@ public class SqlInjectionLesson2 extends AssignmentEndpoint {
       return failed(this).feedback("sql-injection.2.failed").output(sqle.getMessage()).build();
     }
   }
+
+  @PostMapping("/SqlInjection/attack3")
+  @ResponseBody
+  public AttackResult completed2(@RequestParam String query) {
+    return injectableQuery3(query);
+  }
+
+  protected AttackResult injectableQuery3(String query) {
+    try (var connection = dataSource.getConnection()) {
+      Statement statement = connection.createStatement(TYPE_SCROLL_INSENSITIVE, CONCUR_READ_ONLY);
+      ResultSet results = statement.executeQuery(query);
+      StringBuilder output = new StringBuilder();
+
+      results.first();
+
+      if (results.getString("department").equals("Marketing")) {
+        output.append("<span class='feedback-positive'>" + query + "</span>");
+        output.append(SqlInjectionLesson8.generateTable(results));
+        return success(this).feedback("sql-injection.2.success").output(output.toString()).build();
+      } else {
+        return failed(this).feedback("sql-injection.2.failed").output(output.toString()).build();
+      }
+    } catch (SQLException sqle) {
+      return failed(this).feedback("sql-injection.2.failed").output(sqle.getMessage()).build();
+    }
+  }
+
 }
